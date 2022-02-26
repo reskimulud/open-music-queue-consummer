@@ -31,13 +31,10 @@ class PlaylistsService {
 
     const songs = await this._pool.query(querySongs);
 
-    const result = {
+    return {
       ...playlist.rows[0],
       songs: songs.rows,
     };
-
-    console.log(result);
-    return result;
   }
 }
 
