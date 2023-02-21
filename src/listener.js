@@ -1,7 +1,12 @@
+const objectMapper = require("./utils/objectMapper");
+
 class Listener {
+  #playlistsService;
+  #mailSender;
+
   constructor(playlistsService, mailSender) {
-    this._playlistsService = playlistsService;
-    this._mailSender = mailSender;
+    this.#playlistsService = playlistsService;
+    this.#mailSender = mailSender;
 
     this.listen = this.listen.bind(this);
   }
@@ -10,9 +15,10 @@ class Listener {
     try {
       const {playlistId, targetEmail} = JSON.parse(message.content.toString());
 
-      const playlist = await this._playlistsService.getPlaylistById(playlistId);
-      console.log('playlist :', playlist);
-      const result = await this._mailSender.sendEmail(targetEmail, JSON.stringify(playlist));
+      const playlist = await this.#playlistsService.getPlaylistById(playlistId);
+      const exportedPlaylist = objectMapper(playlist);
+      console.log('exported-playlist :', exportedPlaylist);
+      const result = await this.#mailSender.sendEmail(targetEmail, exportedPlaylist);
       console.log(result);
     } catch (error) {
       console.error(error);

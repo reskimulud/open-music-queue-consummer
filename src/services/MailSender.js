@@ -1,8 +1,10 @@
 const nodemailer = require('nodemailer');
 
 class MailSender {
+  #transporter;
+
   constructor() {
-    this._transporter = nodemailer.createTransport({
+    this.#transporter = nodemailer.createTransport({
       host: process.env.MAIL_HOST,
       port: process.env.MAIL_PORT,
       secure: true,
@@ -14,26 +16,24 @@ class MailSender {
   }
 
   sendEmail(targetEmail, content) {
-    const {name, username} = JSON.parse(content);
-    const contentObject = JSON.parse(content);
-    delete contentObject.username;
-    const newContent = JSON.stringify({
-      playlist: contentObject,
-    });
+    console.log('content :', content)
+    const parseName = JSON.parse(content);
+    const name = parseName.playlist.name;
+    console.log('name :', name)
     const message = {
       from: 'Open Music API',
       to: targetEmail,
-      subject: `Export Playlist ${name} by ${username}`,
+      subject: `Export Playlist ${name}`,
       text: 'Attached is the result of the playlist export',
       attachments: [
         {
           filename: 'playlist.json',
-          content: newContent,
+          content,
         },
       ],
     };
 
-    return this._transporter.sendMail(message);
+    return this.#transporter.sendMail(message);
   }
 }
 

@@ -1,8 +1,8 @@
-const { Pool } = require('pg');
-
 class PlaylistsService {
-  constructor() {
-    this._pool = new Pool();
+  #pool;
+
+  constructor(pool) {
+    this.#pool = pool;
   }
 
   async getPlaylistById(id) {
@@ -15,7 +15,7 @@ class PlaylistsService {
       values: [id],
     };
 
-    const playlist = await this._pool.query(queryPlaylist);
+    const playlist = await this.#pool.query(queryPlaylist);
 
     if (!playlist.rowCount) {
       throw new Error('Playlist not found');
@@ -29,7 +29,7 @@ class PlaylistsService {
       values: [playlist.rows[0].id],
     };
 
-    const songs = await this._pool.query(querySongs);
+    const songs = await this.#pool.query(querySongs);
 
     return {
       ...playlist.rows[0],
